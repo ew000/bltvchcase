@@ -1,0 +1,34 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres
+    restart: unless-stopped
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+  web:
+    build: .
+    restart: unless-stopped
+    command: python manage.py runserver 0.0.0.0:8000
+    environment:
+      - SECRET_KEY=django-insecure-jo2hln@b61k2o-*16d42k9^0_rlzs5s6dz)n5hb%h)^9y5qg(w
+      - DEBUG=True
+      - PGNAME=postgres
+      - PGUSER=postgres
+      - PGPASSWORD=postgres
+      - PGHOST=127.0.0.1
+      - PGPORT=5432
+      - REDIS=redis://redis:6379
+    volumes:
+      - .:/code
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+  redis:
+    restart: unless-stopped
+    image: "redis:alpine"
